@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 type HTTP struct {
@@ -17,6 +18,7 @@ type requestSpec struct {
 	method string
 	url    string
 	body   interface{}
+	params map[string]string
 }
 
 func NewHTTP(token, baseURL string) *HTTP {
@@ -35,10 +37,17 @@ func (c *HTTP) Do(ctx context.Context, spec requestSpec, output interface{}) (*h
 	req.Header.Add("Accepts", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 
+	query := url.Values{}
+	for key, value := range spec.params {
+		query.Add(key, value)
+	}
+	req.URL.RawQuery = query.Encode()
+
 	httpResp, err := c.client.Do(req)
 	if err != nil {
 		return httpResp, nil
 	}
+	defer httpResp.Body.Close()
 
 	if output != nil {
 		err = json.NewDecoder(httpResp.Body).Decode(&output)

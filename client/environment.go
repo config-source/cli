@@ -40,3 +40,21 @@ func (ec EnvironmentClient) GetConfigValue(ctx context.Context, environmentName,
 	}, &cv)
 	return cv, err
 }
+
+func (ec EnvironmentClient) GetByName(ctx context.Context, name string) (Environment, error) {
+	var data []Environment
+
+	_, err := ec.modelClient.HTTP.Do(ctx, requestSpec{
+		method: "GET",
+		url:    ec.modelClient.BaseURL(),
+		params: map[string]string{
+			"name": name,
+		},
+	}, &data)
+
+	if len(data) == 0 {
+		return Environment{}, fmt.Errorf("no environment with name %s exists", name)
+	}
+
+	return data[0], err
+}
