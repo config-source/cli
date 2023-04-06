@@ -68,13 +68,15 @@ var envTreeCmd = &cobra.Command{
 			children := make([]*treeNode, 0)
 
 			for _, node := range nodes {
-				indent := strings.Repeat("\t", depth)
+				indent := ""
+				leading := strings.Repeat("─", depth)
 				parentMarker := ""
 				if depth != 0 {
-					parentMarker = "└ "
+					parentMarker = "└"
+					indent = strings.Repeat("   ", depth)
 				}
 
-				fmt.Printf("%s%s%s\n", indent, parentMarker, node.element.Name)
+				fmt.Printf("%s%s%s%s\n", indent, parentMarker, leading, node.element.Name)
 				children = append(children, node.children...)
 			}
 
