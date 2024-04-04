@@ -1,10 +1,11 @@
-package commands
+package env
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 
+	"github.com/config-source/cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +13,7 @@ var envGetCmd = &cobra.Command{
 	Use:   "get <environment-name>",
 	Short: "Get environment information by name",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		env, err := api.Environments().GetByName(context.Background(), args[0])
+		env, err := utils.GetClient().GetEnvironmentByName(context.Background(), args[0])
 		if err != nil {
 			return err
 		}
@@ -25,4 +26,8 @@ var envGetCmd = &cobra.Command{
 		fmt.Println(string(output))
 		return nil
 	},
+}
+
+func init() {
+	Command.AddCommand(envGetCmd)
 }

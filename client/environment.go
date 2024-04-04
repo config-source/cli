@@ -3,58 +3,64 @@ package client
 import (
 	"context"
 	"fmt"
+
+	"github.com/config-source/cdb"
 )
 
-type Environment struct {
-	Model
+var baseEnvURL = "/api/v1/environments"
 
-	Name         string        `json:"name"`
-	Description  string        `json:"description"`
-	PromotesToId int64         `json:"promotes_to_id"`
-	ConfigValues []ConfigValue `json:"config_values"`
-}
+func (ec *Client) GetEnvironmentByName(ctx context.Context, name string) (cdb.Environment, error) {
+	var data cdb.Environment
 
-func (e Environment) ID() int64 {
-	return e.Id
-}
-
-func (e Environment) PluralName() string {
-	return "environments"
-}
-
-type EnvironmentClient struct {
-	modelClient[Environment]
-}
-
-func NewEnvironmentClient(http *HTTP) EnvironmentClient {
-	return EnvironmentClient{
-		modelClient: modelClient[Environment]{http},
-	}
-}
-
-func (ec EnvironmentClient) GetConfigValue(ctx context.Context, environmentName, key string) (ConfigValue, error) {
-	var cv ConfigValue
-	_, err := ec.HTTP.Do(ctx, requestSpec{
+	_, err := ec.Do(ctx, requestSpec{
 		method: "GET",
-		url:    fmt.Sprintf("/api/v1/config-values/%s/%s", environmentName, key),
-	}, &cv)
-	return cv, err
-}
-
-func (ec EnvironmentClient) GetByName(ctx context.Context, name string) (Environment, error) {
-	var data []Environment
-
-	_, err := ec.modelClient.HTTP.Do(ctx, requestSpec{
-		method: "GET",
-		url:    ec.modelClient.BaseURL(),
-		params: map[string]string{
-			"name": name,
-		},
+		url:    fmt.Sprintf("%s/by-name/%s", baseEnvURL, name),
 	}, &data)
 
-	if len(data) == 0 {
-		return Environment{}, fmt.Errorf("no environment with name %s exists", name)
-	}
+	return data, err
+}
 
-	return data[0], err
+func (ec *Client) GetEnvironment(ctx context.Context, id int) (cdb.Environment, error) {
+	var data cdb.Environment
+
+	_, err := ec.Do(ctx, requestSpec{
+		method: "GET",
+		url:    fmt.Sprintf("%s/by-id/%d", baseEnvURL, id),
+	}, &data)
+
+	return data, err
+}
+
+func (ec *Client) CreateEnvironment(ctx context.Context, env cdb.Environment) (cdb.Environment, error) {
+	var data cdb.Environment
+
+	_, err := ec.Do(ctx, requestSpec{
+		method: "POST",
+		url:    baseEnvURL,
+		body:   env,
+	}, &data)
+
+	return data, err
+}
+
+func (ec *Client) ListEnvironments(ctx context.Context) ([]cdb.Environment, error) {
+	var data []cdb.Environment
+
+	_, err := ec.Do(ctx, requestSpec{
+		method: "GET",
+		url:    baseEnvURL,
+	}, &data)
+
+	return data, err
+}
+
+func (ec *Client) GetEnvironmentTree(ctx context.Context) ([]cdb.EnvTree, error) {
+	var data []cdb.EnvTree
+
+	_, err := ec.Do(ctx, requestSpec{
+		method: "GET",
+		url:    fmt.Sprintf("%s/tree", baseEnvURL),
+	}, &data)
+
+	return data, err
 }

@@ -4,28 +4,23 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/config-source/cli/client"
+	"github.com/config-source/cli/commands/config"
+	"github.com/config-source/cli/commands/env"
 	"github.com/spf13/cobra"
 )
 
-var api *client.Client
-
-var root = &cobra.Command{
+var rootCmd = &cobra.Command{
 	Use:   "cdb",
 	Short: "Command line interface for your configuration database.",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// TODO: get token and url from config
-		api = client.New("", "http://localhost:3000")
-	},
 }
 
 func init() {
-	root.AddCommand(getCmd)
-	root.AddCommand(envCmd)
+	rootCmd.AddCommand(config.Command)
+	rootCmd.AddCommand(env.Command)
 }
 
 func Execute() {
-	if err := root.Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

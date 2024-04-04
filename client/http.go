@@ -3,12 +3,13 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 )
 
-type HTTP struct {
+type Client struct {
 	token   string
 	baseURL string
 	client  http.Client
@@ -21,11 +22,11 @@ type requestSpec struct {
 	params map[string]string
 }
 
-func NewHTTP(token, baseURL string) *HTTP {
-	return &HTTP{token: token, baseURL: baseURL, client: http.Client{}}
+func New(token, baseURL string) *Client {
+	return &Client{token: token, baseURL: baseURL, client: http.Client{}}
 }
 
-func (c *HTTP) Do(ctx context.Context, spec requestSpec, output interface{}) (*http.Response, error) {
+func (c *Client) Do(ctx context.Context, spec requestSpec, output interface{}) (*http.Response, error) {
 	fullURL := fmt.Sprintf("%s%s", c.baseURL, spec.url)
 
 	req, err := http.NewRequestWithContext(ctx, spec.method, fullURL, nil)
@@ -49,8 +50,20 @@ func (c *HTTP) Do(ctx context.Context, spec requestSpec, output interface{}) (*h
 	}
 	defer httpResp.Body.Close()
 
+	decoder := json.NewDecoder(httpResp.Body)
+	if httpResp.StatusCode >= 400 {
+		var errResponse struct {
+			Message string `json:"message"`
+		}
+		err = decoder.Decode(&errResponse)
+		if err != nil {
+			return nil, err
+		}
+		err = errors.New(errResponse.Message)
+	}
+
 	if output != nil {
-		err = json.NewDecoder(httpResp.Body).Decode(&output)
+		err = decoder.Decode(&output)
 	}
 
 	return httpResp, err

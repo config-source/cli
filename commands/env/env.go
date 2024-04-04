@@ -1,8 +1,8 @@
-package commands
+package env
 
 import "github.com/spf13/cobra"
 
-var envCmd = &cobra.Command{
+var Command = &cobra.Command{
 	Use: "environment <subcommand>",
 	Aliases: []string{
 		"e",
@@ -11,6 +11,6 @@ var envCmd = &cobra.Command{
 }
 
 func init() {
-	envCmd.AddCommand(envGetCmd)
-	envCmd.AddCommand(envTreeCmd)
+	Command.AddCommand(envGetCmd)
+	Command.AddCommand(envTreeCmd)
 }
