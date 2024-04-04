@@ -89,9 +89,9 @@ func init() {
 	setConfigCmd.Flags().StringVarP(&env, "environment", "e", "", "The environment you want to set the value for, accepts an environment name or ID.")
 	setConfigCmd.Flags().StringVarP(&key, "key", "k", "", "The configuration key you want to set the value for, accepts a key name or ID.")
 	setConfigCmd.Flags().StringVarP(&value, "value", "v", "", "The value you want to set the config key to.")
-	setConfigCmd.MarkFlagRequired("environment")
-	setConfigCmd.MarkFlagRequired("key")
-	setConfigCmd.MarkFlagRequired("value")
+	setConfigCmd.MarkFlagRequired("environment") // nolint:errcheck
+	setConfigCmd.MarkFlagRequired("key")         // nolint:errcheck
+	setConfigCmd.MarkFlagRequired("value")       // nolint:errcheck
 
 	Command.AddCommand(setConfigCmd)
 }
