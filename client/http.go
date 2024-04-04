@@ -1,12 +1,14 @@
 package client
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/config-source/cli/utils"
 )
 
 type Client struct {
@@ -29,9 +31,17 @@ func New(token, baseURL string) *Client {
 func (c *Client) Do(ctx context.Context, spec requestSpec, output interface{}) (*http.Response, error) {
 	fullURL := fmt.Sprintf("%s%s", c.baseURL, spec.url)
 
-	req, err := http.NewRequestWithContext(ctx, spec.method, fullURL, nil)
+	body := bytes.NewBuffer(nil)
+	if spec.body != nil {
+		err := json.NewEncoder(body).Encode(spec.body)
+		if err != nil {
+			return nil, err
+		}
+	}
 
+	req, err := http.NewRequestWithContext(ctx, spec.method, fullURL, body)
 	if err != nil {
+		utils.Debug("error creating a request", err)
 		return nil, err
 	}
 
@@ -46,7 +56,8 @@ func (c *Client) Do(ctx context.Context, spec requestSpec, output interface{}) (
 
 	httpResp, err := c.client.Do(req)
 	if err != nil {
-		return httpResp, nil
+		utils.Debug("error from http.Client.Do", err)
+		return httpResp, err
 	}
 	defer httpResp.Body.Close()
 
@@ -57,13 +68,17 @@ func (c *Client) Do(ctx context.Context, spec requestSpec, output interface{}) (
 		}
 		err = decoder.Decode(&errResponse)
 		if err != nil {
+			utils.Debug("unexpected error decoding an error:", err)
 			return nil, err
 		}
-		err = errors.New(errResponse.Message)
+		err = fmt.Errorf("failure response from API: %s", errResponse.Message)
 	}
 
 	if output != nil {
 		err = decoder.Decode(&output)
+		if err != nil {
+			utils.Debug("error decoding response to output", err)
+		}
 	}
 
 	return httpResp, err

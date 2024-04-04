@@ -14,7 +14,11 @@ var rootCmd = &cobra.Command{
 	Use:   "cdb",
 	Short: "Command line interface for your configuration database.",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		return config.LoadConfig()
+		err := config.LoadConfig()
+		if err != nil {
+			return fmt.Errorf("failed to load config file %s: %s", config.ConfigFile(), err)
+		}
+		return nil
 	},
 }
 

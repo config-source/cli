@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/config-source/cli/utils"
+	"github.com/config-source/cli/config"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +13,7 @@ var envGetCmd = &cobra.Command{
 	Use:   "get <environment-name>",
 	Short: "Get environment information by name",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		env, err := utils.GetClient().GetEnvironmentByName(context.Background(), args[0])
+		env, err := config.Client.GetEnvironmentByName(context.Background(), args[0])
 		if err != nil {
 			return err
 		}

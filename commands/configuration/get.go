@@ -7,8 +7,8 @@ import (
 	"slices"
 
 	"github.com/config-source/cdb"
+	"github.com/config-source/cli/config"
 	"github.com/config-source/cli/table"
-	"github.com/config-source/cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -62,14 +62,14 @@ var getConfigCmd = &cobra.Command{
 		}
 
 		if key != "" {
-			value, err := utils.GetClient().GetConfigurationValue(ctx, env, key)
+			value, err := config.Client.GetConfigurationValue(ctx, env, key)
 			if err != nil {
 				return err
 			}
 
 			fmt.Println(value.Value())
 		} else {
-			values, err := utils.GetClient().GetConfiguration(ctx, env)
+			values, err := config.Client.GetConfiguration(ctx, env)
 			if err != nil {
 				return err
 			}

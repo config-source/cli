@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/config-source/cli/config"
+	"github.com/config-source/cli/utils"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 )
@@ -16,6 +17,7 @@ func input(prompt string) (string, error) {
 	reader := bufio.NewReader(os.Stdin)
 	ans, err := reader.ReadString('\n')
 	if err != nil {
+		utils.Debug("error reading from stdin", err)
 		return ans, err
 	}
 	return strings.TrimSpace(ans), nil

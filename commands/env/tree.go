@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/config-source/cdb"
-	"github.com/config-source/cli/utils"
+	"github.com/config-source/cli/config"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +30,7 @@ var envTreeCmd = &cobra.Command{
 	Use:   "tree",
 	Short: "Print the promotion tree of your environments",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		trees, err := utils.GetClient().GetEnvironmentTree(context.Background())
+		trees, err := config.Client.GetEnvironmentTree(context.Background())
 		if err != nil {
 			return err
 		}
