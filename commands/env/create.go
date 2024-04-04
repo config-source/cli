@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/config-source/cdb"
 	"github.com/config-source/cli/config"
@@ -14,13 +13,7 @@ import (
 var promotesTo string
 
 func getPromotesToID() int {
-	id, err := strconv.Atoi(promotesTo)
-	if err == nil {
-		return id
-	}
-
-	// If there was an error converting to an int then try to get by name
-	env, err := config.Client.GetEnvironmentByName(context.Background(), promotesTo)
+	env, err := config.Client.GetEnvironmentByNameOrID(promotesTo)
 	if err == nil {
 		return env.ID
 	}

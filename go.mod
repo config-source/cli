@@ -3,7 +3,7 @@ module github.com/config-source/cli
 go 1.22.1
 
 require (
-	github.com/config-source/cdb v0.0.0-20240404173326-a0eb82fbd858
+	github.com/config-source/cdb v0.0.0-20240404191804-1acd4780d646
 	github.com/spf13/cobra v1.8.0
 )
 

@@ -24,3 +24,13 @@ func (ec *Client) GetConfiguration(ctx context.Context, environmentName string) 
 	}, &values)
 	return values, err
 }
+
+func (ec *Client) SetConfiguration(ctx context.Context, value cdb.ConfigValue) (cdb.ConfigValue, error) {
+	var setValue cdb.ConfigValue
+	_, err := ec.Do(ctx, requestSpec{
+		method: "POST",
+		url:    "/api/v1/config-values",
+		body:   value,
+	}, &setValue)
+	return setValue, err
+}

@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/config-source/cdb"
 )
@@ -63,4 +64,13 @@ func (ec *Client) GetEnvironmentTree(ctx context.Context) ([]cdb.EnvTree, error)
 	}, &data)
 
 	return data, err
+}
+
+func (ec *Client) GetEnvironmentByNameOrID(nameOrID string) (cdb.Environment, error) {
+	id, err := strconv.Atoi(nameOrID)
+	if err == nil {
+		return ec.GetEnvironment(context.Background(), id)
+	}
+
+	return ec.GetEnvironmentByName(context.Background(), nameOrID)
 }

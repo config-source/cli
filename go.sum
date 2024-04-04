@@ -2,6 +2,8 @@ github.com/chasinglogic/appdirs v0.0.0-20240404201500-635ea422ee89 h1:sDjns/J5Ko
 github.com/chasinglogic/appdirs v0.0.0-20240404201500-635ea422ee89/go.mod h1:b0q8MpnQR+5FwNvfwliMFpV8z3Xw3QtYH7Kb7FLJlQM=
 github.com/config-source/cdb v0.0.0-20240404173326-a0eb82fbd858 h1:+np86BqNbgRvf6pXv4YMFjC7j4qcdg5kyek0shAhmmI=
 github.com/config-source/cdb v0.0.0-20240404173326-a0eb82fbd858/go.mod h1:W8LRrmVnWSbaMOAN+zirGayVRPL/8MYXFY4fuleaEzI=
+github.com/config-source/cdb v0.0.0-20240404191804-1acd4780d646 h1:F5oKxBJ9cz8fHkzHgI3S0Ud3ApOiMRXVCtoXRQKJiHs=
+github.com/config-source/cdb v0.0.0-20240404191804-1acd4780d646/go.mod h1:W8LRrmVnWSbaMOAN+zirGayVRPL/8MYXFY4fuleaEzI=
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/inconshreveable/mousetrap v1.0.1 h1:U3uMjPSQEBMNp1lFxmllqCPM6P5u/Xq7Pgzkat/bFNc=
