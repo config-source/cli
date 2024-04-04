@@ -4,19 +4,24 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/config-source/cli/commands/config"
+	"github.com/config-source/cli/commands/configuration"
 	"github.com/config-source/cli/commands/env"
+	"github.com/config-source/cli/config"
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "cdb",
 	Short: "Command line interface for your configuration database.",
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		return config.LoadConfig()
+	},
 }
 
 func init() {
-	rootCmd.AddCommand(config.Command)
+	rootCmd.AddCommand(configuration.Command)
 	rootCmd.AddCommand(env.Command)
+	rootCmd.AddCommand(setupCmd)
 }
 
 func Execute() {

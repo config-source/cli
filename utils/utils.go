@@ -1,13 +1,15 @@
 package utils
 
-import "github.com/config-source/cli/client"
+import (
+	"github.com/config-source/cli/client"
+	"github.com/config-source/cli/config"
+)
 
 var apiClient *client.Client
 
 func GetClient() *client.Client {
 	if apiClient == nil {
-		// TODO: get token and url from config
-		apiClient = client.New("", "http://localhost:8080")
+		apiClient = client.New(config.Current.Token, config.Current.BaseURL)
 	}
 
 	return apiClient

@@ -1,12 +1,13 @@
-package config
+package configuration
 
 import "github.com/spf13/cobra"
 
 var Command = &cobra.Command{
-	Use: "config <subcommand>",
+	Use: "configuration <subcommand>",
 	Aliases: []string{
 		"c",
 		"cfg",
+		"config",
 	},
 }
 
