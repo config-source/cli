@@ -26,6 +26,13 @@ func ConfigFile() string {
 	return configFile
 }
 
+func DefaultConfig() Config {
+	return Config{
+		Token:   os.Getenv("CDB_TOKEN"),
+		BaseURL: os.Getenv("CDB_BASE_URL"),
+	}
+}
+
 func LoadConfig() error {
 	fh, err := os.Open(ConfigFile())
 	if err != nil && !os.IsNotExist(err) {
@@ -37,6 +44,8 @@ func LoadConfig() error {
 			utils.Debug("unable to create config directory", err)
 			return err
 		}
+
+		Current = DefaultConfig()
 	} else {
 		err := yaml.NewDecoder(fh).Decode(&Current)
 		if err != nil {
@@ -45,7 +54,10 @@ func LoadConfig() error {
 		}
 	}
 
-	Current.Token = os.Getenv("CDB_TOKEN")
+	if os.Getenv("CDB_TOKEN") != "" {
+		Current.Token = os.Getenv("CDB_TOKEN")
+	}
+
 	Client = client.New(Current.Token, Current.BaseURL)
 	return nil
 }
