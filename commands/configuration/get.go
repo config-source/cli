@@ -30,12 +30,13 @@ func valueToRow(cv cdb.ConfigValue) []string {
 	return []string{
 		cv.Name,
 		repr,
+		fmt.Sprintf("%t", cv.Inherited),
 	}
 }
 
 func printConfigTable(values []cdb.ConfigValue) {
 	tbl := table.Table{
-		Headings: []string{"Key", "Value"},
+		Headings: []string{"Key", "Value", "Inherited"},
 		Rows:     make([][]string, len(values)),
 	}
 
