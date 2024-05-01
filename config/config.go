@@ -34,7 +34,8 @@ func DefaultConfig() Config {
 }
 
 func LoadConfig() error {
-	fh, err := os.Open(ConfigFile())
+	cfgFile := ConfigFile()
+	fh, err := os.Open(cfgFile)
 	if err != nil && !os.IsNotExist(err) {
 		utils.Debug("unable to open config file", err)
 		return err
@@ -47,6 +48,7 @@ func LoadConfig() error {
 
 		Current = DefaultConfig()
 	} else {
+		utils.Debug("Loading config file", cfgFile)
 		err := yaml.NewDecoder(fh).Decode(&Current)
 		if err != nil {
 			utils.Debug("unable to decode config", err)
