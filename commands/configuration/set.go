@@ -18,7 +18,7 @@ var (
 	value string
 )
 
-func valueAsString(cv cdb.ConfigValue) string {
+func valueAsString(cv *cdb.ConfigValue) string {
 	switch v := cv.Value().(type) {
 	case string:
 		return v
@@ -29,58 +29,59 @@ func valueAsString(cv cdb.ConfigValue) string {
 	case bool:
 		return fmt.Sprintf("%t", v)
 	default:
+		fmt.Println(cv)
 		return ""
 	}
+}
+
+func determineValueType(value string) (interface{}, cdb.ValueType) {
+	intVal, err := strconv.Atoi(value)
+	if err == nil {
+		return intVal, cdb.TypeInteger
+	}
+
+	floatVal, err := strconv.ParseFloat(value, 64)
+	if err == nil {
+		return floatVal, cdb.TypeFloat
+	}
+
+	lowered := strings.ToLower(value)
+	if lowered == "true" || lowered == "false" {
+		return lowered == "true", cdb.TypeBoolean
+	}
+
+	return value, cdb.TypeString
 }
 
 var setConfigCmd = &cobra.Command{
 	Use: "set",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		environment, err := config.Client.GetEnvironmentByNameOrID(env)
-		if err != nil {
-			return err
-		}
+		configValue := &cdb.ConfigValue{}
+		value, valueType := determineValueType(value)
 
-		configKey, err := config.Client.GetConfigKeyByNameOrID(key)
-		if err != nil {
-			return err
-		}
-
-		configValue := cdb.ConfigValue{
-			EnvironmentID: environment.ID,
-			ConfigKeyID:   configKey.ID,
-		}
-
-		switch configKey.ValueType {
+		switch valueType {
 		case cdb.TypeString:
-			configValue.StrValue = &value
+			configValue.SetStrValue(value.(string))
 		case cdb.TypeBoolean:
-			parsed := strings.ToLower(value) == "true"
-			configValue.BoolValue = &parsed
+			configValue.SetBoolValue(value.(bool))
 		case cdb.TypeInteger:
-			parsed, err := strconv.Atoi(value)
-			if err != nil {
-				return err
-			}
-
-			configValue.IntValue = &parsed
+			configValue.SetIntValue(value.(int))
 		case cdb.TypeFloat:
-			parsed, err := strconv.ParseFloat(value, 64)
-			if err != nil {
-				return err
-			}
-
-			configValue.FloatValue = &parsed
+			configValue.SetFloatValue(value.(float64))
 		default:
 			return errors.New("somehow couldn't find the data type of the config key")
 		}
 
-		created, err := config.Client.SetConfiguration(context.Background(), configValue)
+		if err := configValue.Valid(); err != nil {
+			return err
+		}
+
+		created, err := config.Client.SetConfigurationValue(context.Background(), env, key, configValue)
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("Set %s=%s for %s\n", configKey.Name, valueAsString(created), environment.Name)
+		fmt.Printf("Set %s=%s for %s\n", key, valueAsString(created), env)
 		return nil
 	},
 }

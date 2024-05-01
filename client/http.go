@@ -56,8 +56,7 @@ func (c *Client) Do(ctx context.Context, spec requestSpec, output interface{}) (
 
 	httpResp, err := c.client.Do(req)
 	if err != nil {
-		utils.Debug("error from http.Client.Do", err)
-		return httpResp, err
+		return httpResp, fmt.Errorf("bad http response: %w", err)
 	}
 	defer httpResp.Body.Close()
 
@@ -66,18 +65,19 @@ func (c *Client) Do(ctx context.Context, spec requestSpec, output interface{}) (
 		var errResponse struct {
 			Message string `json:"message"`
 		}
+
 		err = decoder.Decode(&errResponse)
 		if err != nil {
-			utils.Debug("unexpected error decoding an error:", err)
-			return nil, err
+			return nil, fmt.Errorf("unexpected error decoding an error: %w", err)
 		}
+
 		err = fmt.Errorf("failure response from API: %s", errResponse.Message)
 	}
 
 	if output != nil {
 		err = decoder.Decode(&output)
 		if err != nil {
-			utils.Debug("error decoding response to output", err)
+			err = fmt.Errorf("error decoding response to output: %w", err)
 		}
 	}
 
